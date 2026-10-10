@@ -1,0 +1,53 @@
+# ---------------------------------------------------------------
+# SmpWeapons configuration  (/smpweapons reload to apply changes)
+# ---------------------------------------------------------------
+
+mace:
+  # Left-click in the air hits the first living thing in your crosshair
+  # up to this many blocks away ("infinite reach").
+  reach: 128.0
+  # Damage per reach hit (2 = 1 heart).
+  damage: 20.0
+  # Milliseconds between reach hits.
+  cooldown-ms: 600
+  # If false, the reach hit is blocked by walls.
+  through-walls: false
+  # Resistance buff while holding the mace and "healthy".
+  resistance:
+    enabled: true
+    amplifier: 1          # 0 = Resistance I, 1 = Resistance II ...
+    healthy-percent: 0.7  # buff only while health >= 70% of max health
+
+spear:
+  # Material name of the spear. Netherite spear exists in 1.21.11.
+  material: NETHERITE_SPEAR
+  # Adds the vanilla Lunge enchantment at this level (0 = off).
+  lunge-level: 3
+  # Attribute bonuses while held in the main hand.
+  attack-damage-bonus: 12.0
+  attack-speed-bonus: 2.0
+  movement-speed-scalar: 0.25   # +25% walk speed while held
+
+  # Right-click: custom lunge dash.
+  dash:
+    power: 3.2
+    ticks: 8
+    damage: 10.0
+    # 0 = no cooldown, spam it as fast as you can right-click.
+    cooldown-ms: 0
+
+  # Sneak + right-click: call the TNT orbital cannon on what you look at.
+  orbital-cannon:
+    range: 200.0
+    cooldown-ms: 30000
+    charge-ticks: 40       # beam warm-up before TNT starts falling
+    duration-ticks: 60     # how long TNT keeps raining
+    tnt-per-tick: 2
+    radius: 8.0
+    sky-height: 60.0
+    fuse-ticks: 30
+    explosion-power: 4.0
+    # false = explosions hurt entities but do not break blocks.
+    break-blocks: true
+    # true = the caster takes no damage from their own cannon.
+    protect-caster: true

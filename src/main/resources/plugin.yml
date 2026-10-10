@@ -1,0 +1,15 @@
+name: SmpWeapons
+version: '${version}'
+main: com.smpweapons.SmpWeaponsPlugin
+api-version: '1.21.11'
+description: Overpowered SMP weapons - infinite reach mace and orbital cannon spear.
+commands:
+  smpweapons:
+    description: Give or reload the custom weapons.
+    usage: /<command> <give|reload> [mace|spear] [player]
+    aliases: [smpw]
+    permission: smpweapons.admin
+permissions:
+  smpweapons.admin:
+    description: Allows giving the weapons and reloading the config.
+    default: op
