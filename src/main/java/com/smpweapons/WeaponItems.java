@@ -24,10 +24,27 @@ public final class WeaponItems {
 
     private final SmpWeaponsPlugin plugin;
     private final NamespacedKey typeKey;
+    private final NamespacedKey idKey;
 
     public WeaponItems(SmpWeaponsPlugin plugin) {
         this.plugin = plugin;
         this.typeKey = new NamespacedKey(plugin, "weapon_type");
+        this.idKey = new NamespacedKey(plugin, "weapon_id");
+    }
+
+    /** The unique id stamped on a mace/spear, or null for an item without one. */
+    public String idOf(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+        return item.getItemMeta().getPersistentDataContainer().get(idKey, PersistentDataType.STRING);
+    }
+
+    /** Returns a copy of the item stamped with the given unique id. */
+    public ItemStack withId(ItemStack item, String id) {
+        ItemStack copy = item.clone();
+        ItemMeta meta = copy.getItemMeta();
+        meta.getPersistentDataContainer().set(idKey, PersistentDataType.STRING, id);
+        copy.setItemMeta(meta);
+        return copy;
     }
 
     /** Returns "mace", "spear" or null if the item is not one of our weapons. */

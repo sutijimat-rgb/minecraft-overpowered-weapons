@@ -21,7 +21,12 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new WeaponListener(this, items, cannon), this);
 
-        WeaponCommand command = new WeaponCommand(this, items);
+        WeaponRegistry registry = new WeaponRegistry(this);
+        WeaponLimiter limiter = new WeaponLimiter(this, items, registry);
+        getServer().getPluginManager().registerEvents(limiter, this);
+        limiter.start();
+
+        WeaponCommand command = new WeaponCommand(this, items, registry, limiter);
         var pluginCommand = getCommand("smpweapons");
         if (pluginCommand != null) {
             pluginCommand.setExecutor(command);

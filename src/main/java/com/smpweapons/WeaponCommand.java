@@ -17,10 +17,14 @@ public final class WeaponCommand implements TabExecutor {
 
     private final SmpWeaponsPlugin plugin;
     private final WeaponItems items;
+    private final WeaponRegistry registry;
+    private final WeaponLimiter limiter;
 
-    public WeaponCommand(SmpWeaponsPlugin plugin, WeaponItems items) {
+    public WeaponCommand(SmpWeaponsPlugin plugin, WeaponItems items, WeaponRegistry registry, WeaponLimiter limiter) {
         this.plugin = plugin;
         this.items = items;
+        this.registry = registry;
+        this.limiter = limiter;
     }
 
     @Override
@@ -37,6 +41,7 @@ public final class WeaponCommand implements TabExecutor {
             }
             case "give" -> give(sender, label, args);
             case "kit" -> kit(sender, args);
+            case "reset" -> reset(sender, label, args);
             default -> sender.sendMessage(Component.text("Unknown subcommand.", NamedTextColor.RED));
         }
         return true;
@@ -58,6 +63,18 @@ public final class WeaponCommand implements TabExecutor {
         }
         KitItems.give(target);
         sender.sendMessage(Component.text("Gave the maxed diamond kit to " + target.getName() + ".", NamedTextColor.GREEN));
+    }
+
+    private void reset(CommandSender sender, String label, String[] args) {
+        if (args.length < 2 || !(args[1].equalsIgnoreCase("mace") || args[1].equalsIgnoreCase("spear"))) {
+            sender.sendMessage(Component.text("Usage: /" + label + " reset <mace|spear>", NamedTextColor.YELLOW));
+            return;
+        }
+        String type = args[1].toLowerCase(Locale.ROOT);
+        registry.setValidId(type, null);
+        limiter.scanNow();
+        sender.sendMessage(Component.text("The " + type + " was reset. Copies held by online players were removed, "
+                + "and a new one can be given now.", NamedTextColor.GREEN));
     }
 
     private void give(CommandSender sender, String label, String[] args) {
@@ -99,6 +116,17 @@ public final class WeaponCommand implements TabExecutor {
             }
         }
 
+        // Only one mace and one spear may exist on the whole server.
+        String type = args[1].toLowerCase(Locale.ROOT);
+        if (registry.validId(type) != null) {
+            sender.sendMessage(Component.text("A " + type + " already exists on this server. If it was lost or destroyed, "
+                    + "run /" + label + " reset " + type + " first.", NamedTextColor.RED));
+            return;
+        }
+        String uniqueId = java.util.UUID.randomUUID().toString();
+        item = items.withId(item, uniqueId);
+        registry.setValidId(type, uniqueId);
+
         var leftover = target.getInventory().addItem(item);
         leftover.values().forEach(rest -> target.getWorld().dropItemNaturally(target.getLocation(), rest));
         String applied = item.getEnchantments().entrySet().stream()
@@ -112,7 +140,9 @@ public final class WeaponCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            out.addAll(List.of("give", "kit", "reload"));
+            out.addAll(List.of("give", "kit", "reset", "reload"));
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
+            out.addAll(List.of("mace", "spear"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("kit")) {
             Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
