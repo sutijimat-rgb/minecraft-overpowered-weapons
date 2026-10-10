@@ -26,7 +26,7 @@ public final class WeaponCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /" + label + " <give|reload> [mace|spear] [player]", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /" + label + " <give|kit|reload> [mace|spear] [player]", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -36,9 +36,28 @@ public final class WeaponCommand implements TabExecutor {
                 sender.sendMessage(Component.text("SmpWeapons config reloaded.", NamedTextColor.GREEN));
             }
             case "give" -> give(sender, label, args);
+            case "kit" -> kit(sender, args);
             default -> sender.sendMessage(Component.text("Unknown subcommand.", NamedTextColor.RED));
         }
         return true;
+    }
+
+    private void kit(CommandSender sender, String[] args) {
+        Player target;
+        if (args.length >= 2) {
+            target = Bukkit.getPlayerExact(args[1]);
+            if (target == null) {
+                sender.sendMessage(Component.text("Player not found: " + args[1], NamedTextColor.RED));
+                return;
+            }
+        } else if (sender instanceof Player self) {
+            target = self;
+        } else {
+            sender.sendMessage(Component.text("Console must specify a player.", NamedTextColor.RED));
+            return;
+        }
+        KitItems.give(target);
+        sender.sendMessage(Component.text("Gave the maxed diamond kit to " + target.getName() + ".", NamedTextColor.GREEN));
     }
 
     private void give(CommandSender sender, String label, String[] args) {
@@ -89,7 +108,9 @@ public final class WeaponCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            out.addAll(List.of("give", "reload"));
+            out.addAll(List.of("give", "kit", "reload"));
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("kit")) {
+            Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             out.addAll(List.of("mace", "spear"));
         } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
