@@ -10,6 +10,9 @@ mace:
   damage: 20.0
   # Milliseconds between reach hits.
   cooldown-ms: 600
+  # true = every reach hit counts as a mace smash, so Wind Burst launches you
+  # even when you are standing still. false = only after falling 1.5+ blocks.
+  reach-always-smash: true
   # If false, the reach hit is blocked by walls.
   through-walls: false
   # Enchantments on the mace (vanilla names, level 0 = skip).

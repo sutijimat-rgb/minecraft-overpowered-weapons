@@ -3,9 +3,12 @@ package com.smpweapons;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +21,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
@@ -105,10 +109,41 @@ public final class WeaponListener implements Listener {
         Vector end = hit.getHitPosition();
         drawLine(world, eye.toVector().add(dir.clone().multiply(1.5)), end);
 
-        target.damage(damage, player);
+        // A plugin-made hit skips vanilla mace enchant effects, so apply them here.
+        ItemStack held = player.getInventory().getItemInMainHand();
+        int windBurst = enchantLevel(held, "wind_burst");
+        int breach = enchantLevel(held, "breach");
+        int density = enchantLevel(held, "density");
+
+        double fallen = player.getFallDistance();
+        // true = every reach hit counts as a smash (so Wind Burst works while standing still).
+        boolean smash = fallen > 1.5 || cfg.getBoolean("mace.reach-always-smash", true);
+
+        double total = damage;
+        if (smash) {
+            total += fallen * 0.5 * density;   // Density: +0.5 damage per block fallen, per level
+            total += damage * 0.15 * breach;   // Breach: approximates ignoring 15% of armor per level
+        }
+        target.damage(total, player);
+
+        if (smash && windBurst > 0) {
+            // Wind Burst: launch the wielder upward and cancel the fall.
+            Vector v = player.getVelocity();
+            player.setVelocity(new Vector(v.getX(), 0.8 + 0.4 * windBurst, v.getZ()));
+            player.setFallDistance(0);
+            world.playSound(player.getLocation(), Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.5f, 1.0f);
+            world.spawnParticle(Particle.GUST_EMITTER_SMALL, player.getLocation(), 1);
+        }
+
         target.setVelocity(target.getVelocity().add(dir.clone().multiply(0.8).setY(0.35)));
         world.playSound(target.getLocation(), Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.5f, 1.0f);
         world.spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 25, 0.4, 0.6, 0.4, 0.2);
+    }
+
+    private static int enchantLevel(ItemStack item, String name) {
+        if (item == null) return 0;
+        Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(name));
+        return enchantment == null ? 0 : item.getEnchantmentLevel(enchantment);
     }
 
     private void drawLine(World world, Vector from, Vector to) {

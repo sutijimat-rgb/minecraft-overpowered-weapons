@@ -101,7 +101,11 @@ public final class WeaponCommand implements TabExecutor {
 
         var leftover = target.getInventory().addItem(item);
         leftover.values().forEach(rest -> target.getWorld().dropItemNaturally(target.getLocation(), rest));
-        sender.sendMessage(Component.text("Gave " + args[1].toLowerCase(Locale.ROOT) + " to " + target.getName() + ".", NamedTextColor.GREEN));
+        String applied = item.getEnchantments().entrySet().stream()
+                .map(e -> e.getKey().getKey().getKey() + " " + e.getValue())
+                .collect(java.util.stream.Collectors.joining(", "));
+        sender.sendMessage(Component.text("Gave " + args[1].toLowerCase(Locale.ROOT) + " to " + target.getName()
+                + ". Enchants: " + (applied.isEmpty() ? "none" : applied), NamedTextColor.GREEN));
     }
 
     @Override
