@@ -12,11 +12,17 @@ mace:
   cooldown-ms: 600
   # If false, the reach hit is blocked by walls.
   through-walls: false
-  # Resistance buff while holding the mace and "healthy".
+  # Enchantments on the mace (vanilla names, level 0 = skip).
+  # Applied when you run /smpweapons give mace.
+  enchantments:
+    wind_burst: 2
+    breach: 4
+    density: 5
+  # Resistance buff while the mace is ANYWHERE in your inventory and you are "healthy".
   resistance:
     enabled: true
-    amplifier: 1          # 0 = Resistance I, 1 = Resistance II ...
-    healthy-percent: 0.7  # buff only while health >= 70% of max health
+    resistance-level: 4   # 4 = Resistance IV, 5 = Resistance V (full immunity)
+    healthy-percent: 0.7  # buff only while health >= 70% of max health (0 = always)
 
 spear:
   # Material name of the spear. Netherite spear exists in 1.21.11.
@@ -45,7 +51,9 @@ spear:
     tnt-per-tick: 2
     radius: 8.0
     sky-height: 60.0
-    fuse-ticks: 30
+    # TNT explodes the moment it lands. This is only a safety timer in case
+    # it never lands (for example it falls into the void).
+    safety-fuse-ticks: 200
     explosion-power: 4.0
     # false = explosions hurt entities but do not break blocks.
     break-blocks: true

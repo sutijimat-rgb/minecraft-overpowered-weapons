@@ -43,9 +43,32 @@ public final class WeaponItems {
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 line("Infinite reach: left-click anything in sight."),
-                line("Resistance while you are healthy.")));
+                line("Resistance IV while it is in your inventory and you are healthy.")));
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
+        // Enchantments come from config (default: Wind Burst II, Breach IV, Density V).
+        // The "true" lets us go past the vanilla conflict and level rules.
+        var enchants = plugin.getConfig().getConfigurationSection("mace.enchantments");
+        java.util.Map<String, Integer> wanted = new java.util.LinkedHashMap<>();
+        if (enchants != null) {
+            for (String key : enchants.getKeys(false)) wanted.put(key, enchants.getInt(key, 0));
+        } else {
+            // Old saved config without this section: use the defaults.
+            wanted.put("wind_burst", 2);
+            wanted.put("breach", 4);
+            wanted.put("density", 5);
+        }
+        for (var entry : wanted.entrySet()) {
+            if (entry.getValue() <= 0) continue;
+            Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(entry.getKey().toLowerCase()));
+            if (enchantment == null) {
+                plugin.getLogger().warning("Unknown enchantment in config: " + entry.getKey());
+                continue;
+            }
+            meta.addEnchant(enchantment, entry.getValue(), true);
+        }
+
         meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, MACE);
         item.setItemMeta(meta);
         return item;

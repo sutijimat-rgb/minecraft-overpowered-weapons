@@ -35,12 +35,12 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
     private void tickMacePassive() {
         var cfg = getConfig();
         if (!cfg.getBoolean("mace.resistance.enabled", true)) return;
-        int amplifier = cfg.getInt("mace.resistance.amplifier", 1);
+        // "resistance-level" is 1-based (4 = Resistance IV). A new key name so an old saved config can't override it.
+        int amplifier = Math.max(0, cfg.getInt("mace.resistance.resistance-level", 4) - 1);
         double healthyPercent = cfg.getDouble("mace.resistance.healthy-percent", 0.7);
 
         for (Player player : getServer().getOnlinePlayers()) {
-            ItemStack held = player.getInventory().getItemInMainHand();
-            if (!WeaponItems.MACE.equals(items.typeOf(held))) continue;
+            if (!hasMace(player)) continue;
 
             AttributeInstance maxHealth = player.getAttribute(Attribute.MAX_HEALTH);
             if (maxHealth == null) continue;
@@ -49,5 +49,13 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
                         PotionEffectType.RESISTANCE, 30, amplifier, true, false, true));
             }
         }
+    }
+
+    /** True if the player has the custom mace anywhere in their inventory, hotbar, armor or offhand. */
+    private boolean hasMace(Player player) {
+        for (ItemStack stack : player.getInventory().getContents()) {
+            if (WeaponItems.MACE.equals(items.typeOf(stack))) return true;
+        }
+        return false;
     }
 }

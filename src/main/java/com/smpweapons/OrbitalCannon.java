@@ -1,5 +1,7 @@
 package com.smpweapons;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -12,6 +14,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class OrbitalCannon {
@@ -35,7 +40,7 @@ public final class OrbitalCannon {
         int tntPerTick = cfg.getInt("spear.orbital-cannon.tnt-per-tick", 2);
         double radius = cfg.getDouble("spear.orbital-cannon.radius", 8.0);
         double skyHeight = cfg.getDouble("spear.orbital-cannon.sky-height", 60.0);
-        int fuse = cfg.getInt("spear.orbital-cannon.fuse-ticks", 30);
+        int safetyFuse = cfg.getInt("spear.orbital-cannon.safety-fuse-ticks", 200);
         float power = (float) cfg.getDouble("spear.orbital-cannon.explosion-power", 4.0);
 
         World world = target.getWorld();
@@ -43,18 +48,26 @@ public final class OrbitalCannon {
 
         world.playSound(target, Sound.BLOCK_BEACON_ACTIVATE, 4.0f, 0.6f);
         caster.playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1.0f, 0.5f);
+        caster.sendActionBar(Component.text("ORBITAL CANNON FIRING", NamedTextColor.RED));
+        caster.sendMessage(Component.text("Orbital cannon locked on at "
+                + target.getBlockX() + ", " + target.getBlockY() + ", " + target.getBlockZ(),
+                NamedTextColor.RED));
+
+        List<TNTPrimed> falling = new ArrayList<>();
 
         new BukkitRunnable() {
             int tick = 0;
 
             @Override
             public void run() {
+                int endTick = chargeTicks + durationTicks;
+
                 if (tick < chargeTicks) {
                     drawBeam(world, target, topY);
                     // Warning ring on the ground that tightens as it charges.
                     double ringRadius = radius * (1.0 - (double) tick / Math.max(1, chargeTicks)) + 1.0;
                     drawRing(world, target, ringRadius);
-                } else if (tick < chargeTicks + durationTicks) {
+                } else if (tick < endTick) {
                     drawBeam(world, target, topY);
                     ThreadLocalRandom rng = ThreadLocalRandom.current();
                     for (int i = 0; i < tntPerTick; i++) {
@@ -64,19 +77,34 @@ public final class OrbitalCannon {
                                 target.getX() + Math.cos(angle) * dist,
                                 topY,
                                 target.getZ() + Math.sin(angle) * dist);
-                        world.spawn(spawn, TNTPrimed.class, tnt -> {
-                            tnt.setFuseTicks(fuse);
-                            tnt.setYield(power);
-                            tnt.setSource(caster);
-                            tnt.setVelocity(new Vector(0, -1.5, 0));
-                            tnt.getPersistentDataContainer().set(tntKey, PersistentDataType.BYTE, (byte) 1);
+                        TNTPrimed tnt = world.spawn(spawn, TNTPrimed.class, t -> {
+                            t.setFuseTicks(safetyFuse);
+                            t.setYield(power);
+                            t.setSource(caster);
+                            t.setVelocity(new Vector(0, -1.5, 0));
+                            t.getPersistentDataContainer().set(tntKey, PersistentDataType.BYTE, (byte) 1);
                         });
+                        falling.add(tnt);
                     }
-                } else {
-                    cancel();
-                    return;
                 }
+
+                // Blow each TNT up the moment it touches down, so it explodes
+                // at the target instead of in mid-air.
+                Iterator<TNTPrimed> it = falling.iterator();
+                while (it.hasNext()) {
+                    TNTPrimed tnt = it.next();
+                    if (!tnt.isValid()) {
+                        it.remove();
+                    } else if (tnt.isOnGround() || tnt.getLocation().getY() <= target.getY() + 0.5) {
+                        tnt.setFuseTicks(1);
+                        it.remove();
+                    }
+                }
+
                 tick++;
+                if (tick >= endTick && falling.isEmpty()) {
+                    cancel();
+                }
             }
         }.runTaskTimer(plugin, 0L, 1L);
     }
