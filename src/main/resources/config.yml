@@ -45,20 +45,18 @@ spear:
     # 0 = no cooldown, spam it as fast as you can right-click.
     cooldown-ms: 0
 
-  # Sneak + right-click: call the TNT orbital cannon on what you look at.
+  # Sneak + right-click: orbital strike on what you look at.
+  # A beam charges from the sky, then a huge blast kills everything nearby
+  # and drills a shaft straight down toward bedrock.
   orbital-cannon:
-    range: 200.0
+    range: 300.0
     cooldown-ms: 30000
-    charge-ticks: 40       # beam warm-up before TNT starts falling
-    duration-ticks: 60     # how long TNT keeps raining
-    tnt-per-tick: 2
-    radius: 8.0
-    sky-height: 60.0
-    # TNT explodes the moment it lands. This is only a safety timer in case
-    # it never lands (for example it falls into the void).
-    safety-fuse-ticks: 200
-    explosion-power: 4.0
-    # false = explosions hurt entities but do not break blocks.
+    charge-ticks: 80        # beam charge time before impact (20 ticks = 1 second)
+    shaft-radius: 12.0      # width of the hole drilled down
+    damage-radius: 24.0     # everything alive inside this radius is hit by the blast
+    strike-damage: 1000.0   # damage dealt to everything in the blast radius
+    layers-per-tick: 6      # how fast the shaft is dug (higher = faster but more lag)
+    # false = the blast still kills but no shaft is dug (no block damage).
     break-blocks: true
-    # true = the caster takes no damage from their own cannon.
+    # true = the caster takes no damage from their own strike.
     protect-caster: true

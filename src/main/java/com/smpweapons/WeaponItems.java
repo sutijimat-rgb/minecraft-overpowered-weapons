@@ -104,7 +104,7 @@ public final class WeaponItems {
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 line("Right-click: lunge dash (no cooldown)."),
-                line("Sneak + right-click: TNT orbital cannon."),
+                line("Sneak + right-click: orbital strike."),
                 line("Light-speed attacks.")));
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
