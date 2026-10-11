@@ -50,8 +50,8 @@ spear:
   # and drills a shaft straight down toward bedrock.
   orbital-cannon:
     range: 300.0
-    cooldown-ms: 30000
-    charge-ticks: 80        # beam charge time before impact (20 ticks = 1 second)
+    cooldown-seconds: 10
+    charge-ticks: 80       # beam charge time before impact (20 ticks = 1 second)
     shaft-radius: 12.0      # width of the hole drilled down
     damage-radius: 24.0     # everything alive inside this radius is hit by the blast
     strike-damage: 1000.0   # damage dealt to everything in the blast radius

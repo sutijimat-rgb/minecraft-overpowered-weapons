@@ -207,7 +207,8 @@ public final class WeaponListener implements Listener {
 
     private void fireCannon(Player player) {
         var cfg = plugin.getConfig();
-        long cooldownMs = cfg.getLong("spear.orbital-cannon.cooldown-ms", 30000);
+        // New key name (seconds) so an old saved config with the 30 second value can't override it.
+        long cooldownMs = cfg.getLong("spear.orbital-cannon.cooldown-seconds", 10) * 1000L;
         double range = cfg.getDouble("spear.orbital-cannon.range", 200.0);
 
         World world = player.getWorld();

@@ -9,6 +9,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionType;
 
 /** Maxed-out diamond gear and essentials, given by /smpweapons kit. */
 public final class KitItems {
@@ -57,17 +59,34 @@ public final class KitItems {
         add(player, gear(Material.BOW,
                 "power:5", "punch:2", "flame:1", "infinity:1", "unbreaking:3", "mending:1"));
         add(player, gear(Material.SHIELD, "unbreaking:3", "mending:1"));
-        add(player, gear(Material.ELYTRA, "unbreaking:3", "mending:1"));
+
+        // Potions: one of each drinkable, plus splash healing for fights.
+        add(player, potion(Material.POTION, PotionType.STRONG_STRENGTH));
+        add(player, potion(Material.POTION, PotionType.STRONG_SWIFTNESS));
+        add(player, potion(Material.POTION, PotionType.STRONG_REGENERATION));
+        add(player, potion(Material.POTION, PotionType.LONG_FIRE_RESISTANCE));
+        add(player, potion(Material.POTION, PotionType.NIGHT_VISION));
+        add(player, potion(Material.POTION, PotionType.WATER_BREATHING));
+        for (int i = 0; i < 8; i++) {
+            add(player, potion(Material.SPLASH_POTION, PotionType.STRONG_HEALING));
+        }
 
         // Essentials.
         add(player, new ItemStack(Material.ARROW, 1));
-        add(player, new ItemStack(Material.FIREWORK_ROCKET, 64));
         add(player, new ItemStack(Material.COOKED_BEEF, 64));
         add(player, new ItemStack(Material.GOLDEN_APPLE, 32));
         add(player, new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 8));
         add(player, new ItemStack(Material.ENDER_PEARL, 16));
         add(player, new ItemStack(Material.WATER_BUCKET, 1));
         add(player, new ItemStack(Material.TOTEM_OF_UNDYING, 1));
+    }
+
+    private static ItemStack potion(Material material, PotionType type) {
+        ItemStack item = new ItemStack(material);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.setBasePotionType(type);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private static void equipOrGive(Player player, EquipmentSlot slot, ItemStack item) {
