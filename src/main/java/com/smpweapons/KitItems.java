@@ -52,12 +52,6 @@ public final class KitItems {
                 "sharpness:5", "efficiency:5", "unbreaking:3", "mending:1"));
         add(player, gear(Material.DIAMOND_PICKAXE,
                 "efficiency:5", "fortune:3", "unbreaking:3", "mending:1"));
-        add(player, gear(Material.DIAMOND_SHOVEL,
-                "efficiency:5", "fortune:3", "unbreaking:3", "mending:1"));
-        add(player, gear(Material.DIAMOND_HOE,
-                "efficiency:5", "fortune:3", "unbreaking:3", "mending:1"));
-        add(player, gear(Material.BOW,
-                "power:5", "punch:2", "flame:1", "infinity:1", "unbreaking:3", "mending:1"));
         add(player, gear(Material.SHIELD, "unbreaking:3", "mending:1"));
 
         // Potions: one of each drinkable, plus splash healing for fights.
@@ -72,7 +66,6 @@ public final class KitItems {
         }
 
         // Essentials.
-        add(player, new ItemStack(Material.ARROW, 1));
         add(player, new ItemStack(Material.COOKED_BEEF, 64));
         add(player, new ItemStack(Material.GOLDEN_APPLE, 32));
         add(player, new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 8));
