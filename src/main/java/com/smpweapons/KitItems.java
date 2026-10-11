@@ -72,6 +72,16 @@ public final class KitItems {
         add(player, new ItemStack(Material.ENDER_PEARL, 16));
         add(player, new ItemStack(Material.WATER_BUCKET, 1));
         add(player, new ItemStack(Material.TOTEM_OF_UNDYING, 1));
+
+        // Supplies for building, fighting and fixing gear.
+        add(player, new ItemStack(Material.GOLDEN_CARROT, 64));
+        add(player, new ItemStack(Material.EXPERIENCE_BOTTLE, 64));
+        add(player, new ItemStack(Material.COBBLESTONE, 64));
+        add(player, new ItemStack(Material.COBBLESTONE, 64));
+        add(player, new ItemStack(Material.OBSIDIAN, 14));
+        add(player, new ItemStack(Material.COBWEB, 16));
+        add(player, new ItemStack(Material.LAVA_BUCKET, 1));
+        add(player, new ItemStack(Material.FLINT_AND_STEEL, 1));
     }
 
     private static ItemStack potion(Material material, PotionType type) {
