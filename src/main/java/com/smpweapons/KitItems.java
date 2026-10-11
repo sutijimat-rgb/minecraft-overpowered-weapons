@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
-/** Maxed-out diamond gear and essentials, given by /smpweapons kit. */
+/** Practice-server style maxed diamond SMP kit, given by /smpweapons kit. */
 public final class KitItems {
 
     private KitItems() {}
@@ -38,7 +38,7 @@ public final class KitItems {
         equipOrGive(player, EquipmentSlot.HEAD, gear(Material.DIAMOND_HELMET,
                 "protection:4", "unbreaking:3", "mending:1", "respiration:3", "aqua_affinity:1"));
         equipOrGive(player, EquipmentSlot.CHEST, gear(Material.DIAMOND_CHESTPLATE,
-                "protection:4", "unbreaking:3", "mending:1", "thorns:3"));
+                "protection:4", "unbreaking:3", "mending:1"));
         equipOrGive(player, EquipmentSlot.LEGS, gear(Material.DIAMOND_LEGGINGS,
                 "protection:4", "unbreaking:3", "mending:1", "swift_sneak:3"));
         equipOrGive(player, EquipmentSlot.FEET, gear(Material.DIAMOND_BOOTS,
@@ -46,46 +46,35 @@ public final class KitItems {
 
         // Weapons and tools.
         add(player, gear(Material.DIAMOND_SWORD,
-                "sharpness:5", "looting:3", "fire_aspect:2", "sweeping_edge:3", "knockback:2",
-                "unbreaking:3", "mending:1"));
+                "sharpness:5", "fire_aspect:2", "looting:3", "sweeping_edge:3", "unbreaking:3", "mending:1"));
         add(player, gear(Material.DIAMOND_AXE,
                 "sharpness:5", "efficiency:5", "unbreaking:3", "mending:1"));
         add(player, gear(Material.DIAMOND_PICKAXE,
                 "efficiency:5", "fortune:3", "unbreaking:3", "mending:1"));
         add(player, gear(Material.SHIELD, "unbreaking:3", "mending:1"));
 
-        // Potions: one of each drinkable, plus splash healing for fights.
-        add(player, potion(Material.POTION, PotionType.STRONG_STRENGTH));
-        add(player, potion(Material.POTION, PotionType.STRONG_SWIFTNESS));
-        add(player, potion(Material.POTION, PotionType.STRONG_REGENERATION));
-        add(player, potion(Material.POTION, PotionType.LONG_FIRE_RESISTANCE));
-        add(player, potion(Material.POTION, PotionType.NIGHT_VISION));
-        add(player, potion(Material.POTION, PotionType.WATER_BREATHING));
+        // Splash potions, like a practice server.
+        for (int i = 0; i < 2; i++) {
+            add(player, potion(PotionType.STRONG_STRENGTH));
+            add(player, potion(PotionType.STRONG_SWIFTNESS));
+            add(player, potion(PotionType.LONG_FIRE_RESISTANCE));
+        }
         for (int i = 0; i < 8; i++) {
-            add(player, potion(Material.SPLASH_POTION, PotionType.STRONG_HEALING));
+            add(player, potion(PotionType.STRONG_HEALING));
         }
 
         // Essentials.
-        add(player, new ItemStack(Material.COOKED_BEEF, 64));
-        add(player, new ItemStack(Material.GOLDEN_APPLE, 32));
-        add(player, new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 8));
+        add(player, new ItemStack(Material.GOLDEN_APPLE, 16));
+        add(player, new ItemStack(Material.TOTEM_OF_UNDYING, 2));
         add(player, new ItemStack(Material.ENDER_PEARL, 16));
+        add(player, new ItemStack(Material.COOKED_BEEF, 64));
         add(player, new ItemStack(Material.WATER_BUCKET, 1));
-        add(player, new ItemStack(Material.TOTEM_OF_UNDYING, 1));
-
-        // Supplies for building, fighting and fixing gear.
-        add(player, new ItemStack(Material.GOLDEN_CARROT, 64));
-        add(player, new ItemStack(Material.EXPERIENCE_BOTTLE, 64));
-        add(player, new ItemStack(Material.COBBLESTONE, 64));
-        add(player, new ItemStack(Material.COBBLESTONE, 64));
-        add(player, new ItemStack(Material.OBSIDIAN, 14));
-        add(player, new ItemStack(Material.COBWEB, 16));
         add(player, new ItemStack(Material.LAVA_BUCKET, 1));
-        add(player, new ItemStack(Material.FLINT_AND_STEEL, 1));
+        add(player, new ItemStack(Material.COBBLESTONE, 64));
     }
 
-    private static ItemStack potion(Material material, PotionType type) {
-        ItemStack item = new ItemStack(material);
+    private static ItemStack potion(PotionType type) {
+        ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         meta.setBasePotionType(type);
         item.setItemMeta(meta);

@@ -45,18 +45,19 @@ spear:
     # 0 = no cooldown, spam it as fast as you can right-click.
     cooldown-ms: 0
 
-  # Sneak + right-click: orbital strike on what you look at.
-  # A beam charges from the sky, then a huge blast kills everything nearby
-  # and drills a shaft straight down toward bedrock.
+  # Sneak + right-click: orbital strike cannon (real TNT explosions).
+  #   mode: stab = a column of TNT from the sky to the bottom of the world
+  #         nuke = rings of TNT falling from the sky onto the target
   orbital-cannon:
+    mode: stab
     range: 300.0
     cooldown-seconds: 10
-    charge-ticks: 80       # beam charge time before impact (20 ticks = 1 second)
-    shaft-radius: 12.0      # width of the hole drilled down
-    damage-radius: 24.0     # everything alive inside this radius is hit by the blast
-    strike-damage: 1000.0   # damage dealt to everything in the blast radius
-    layers-per-tick: 6      # how fast the shaft is dug (higher = faster but more lag)
-    # false = the blast still kills but no shaft is dug (no block damage).
+    charge-ticks: 60            # beam charge time before the strike (20 ticks = 1 second)
+    blast-power: 5.0            # power of each TNT (vanilla TNT is 4.0, bigger = wider hole)
+    stab-spacing: 3             # blocks between TNT in the stab column (bigger = fewer TNT)
+    tnt-spawned-per-tick: 20    # how fast the stab column is spawned (lower = less lag)
+    nuke-radius: 20.0           # outer ring radius for nuke mode
+    # false = TNT hurts players and mobs but does not break blocks.
     break-blocks: true
     # true = the caster takes no damage from their own strike.
     protect-caster: true
