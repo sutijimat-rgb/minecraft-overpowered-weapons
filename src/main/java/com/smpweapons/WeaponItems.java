@@ -103,8 +103,9 @@ public final class WeaponItems {
         meta.displayName(Component.text("Orbital Spear", NamedTextColor.AQUA, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
-                line("Right-click: orbital NUKE (no cooldown)."),
-                line("Shift + right-click: orbital STAB (5s cooldown)."),
+                line("Right-click: lunge dash."),
+                line("Shift + right-click: orbital NUKE."),
+                line("Shift + left-click: orbital STAB."),
                 line("Light-speed attacks.")));
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

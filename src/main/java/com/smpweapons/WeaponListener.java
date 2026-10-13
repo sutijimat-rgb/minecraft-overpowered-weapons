@@ -64,9 +64,19 @@ public final class WeaponListener implements Listener {
                 reachAttack(player);
             }
         } else if (WeaponItems.SPEAR.equals(type)) {
-            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                // Shift + right-click = stab (column), right-click = nuke (rings).
-                fireCannon(player, player.isSneaking());
+            boolean rightClick = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
+            boolean leftClick = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+            if (rightClick) {
+                // Right-click = lunge dash, Shift + right-click = nuke (rings of TNT).
+                if (player.isSneaking()) {
+                    fireCannon(player, false);
+                } else {
+                    lungeDash(player);
+                }
+            } else if (leftClick && player.isSneaking()) {
+                // Shift + left-click = stab (column of TNT). Cancel so it doesn't also break a block.
+                event.setCancelled(true);
+                fireCannon(player, true);
             }
         }
     }
@@ -207,8 +217,8 @@ public final class WeaponListener implements Listener {
         var cfg = plugin.getConfig();
         // New key names (seconds) so an old saved config can't override these.
         long cooldownMs = stab
-                ? cfg.getLong("spear.orbital-cannon.stab-cooldown-seconds", 5) * 1000L
-                : cfg.getLong("spear.orbital-cannon.nuke-cooldown-seconds", 0) * 1000L;
+                ? cfg.getLong("spear.orbital-cannon.cooldown.stab-seconds", 0) * 1000L
+                : cfg.getLong("spear.orbital-cannon.cooldown.nuke-seconds", 0) * 1000L;
         Map<UUID, Long> cooldowns = stab ? cannonCooldown : nukeCooldown;
         double range = cfg.getDouble("spear.orbital-cannon.range", 200.0);
 

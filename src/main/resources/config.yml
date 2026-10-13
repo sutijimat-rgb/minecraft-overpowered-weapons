@@ -46,13 +46,14 @@ spear:
     cooldown-ms: 0
 
   # Orbital strike cannon (real TNT explosions).
-  #   Right-click        = NUKE: rings of TNT falling from the sky onto the target
-  #   Shift + right-click = STAB: a column of TNT from the sky to the bottom of the world
-  # (The spear's dash was replaced by these. The Lunge enchantment on the spear is vanilla.)
+  #   Right-click         = lunge dash (see "dash" above)
+  #   Shift + right-click = NUKE: rings of TNT falling from the sky onto the target
+  #   Shift + left-click  = STAB: a column of TNT from the sky to the bottom of the world
   orbital-cannon:
     range: 300.0
-    stab-cooldown-seconds: 5
-    nuke-cooldown-seconds: 0      # 0 = no cooldown
+    cooldown:
+      stab-seconds: 0             # 0 = no cooldown
+      nuke-seconds: 0             # 0 = no cooldown
     stab-charge-ticks: 60         # beam charge time before the stab (20 ticks = 1 second)
     nuke-charge-ticks: 20         # beam charge time before the nuke
     tnt-power: 6.0                # power of each TNT (vanilla TNT is 4.0)
