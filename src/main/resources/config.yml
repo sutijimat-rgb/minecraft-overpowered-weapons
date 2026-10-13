@@ -57,9 +57,9 @@ spear:
     stab-charge-ticks: 60         # beam charge time before the stab (20 ticks = 1 second)
     nuke-charge-ticks: 20         # beam charge time before the nuke
     tnt-power: 6.0                # power of each TNT (vanilla TNT is 4.0)
-    tnt-per-spot: 20              # TNT packed into one spot so explosions stack
-    stab-spacing: 3               # blocks between TNT spots in the stab column
-    spots-per-tick: 4             # spots spawned per tick (lower = less lag, higher = faster strike)
+    packed-tnt: 4                 # TNT packed into one spot (more = more damage to entities but MUCH more lag)
+    column-spacing: 4             # blocks between TNT spots in the stab column (bigger = less lag)
+    spawn-rate: 2                 # TNT spots spawned per tick (lower = less lag, higher = faster strike)
     nuke-radius: 20.0             # outer ring radius of the nuke
     # false = TNT hurts players and mobs but does not break blocks.
     break-blocks: true

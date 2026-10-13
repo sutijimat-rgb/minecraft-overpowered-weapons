@@ -48,9 +48,9 @@ public final class OrbitalCannon {
                 ? cfg.getInt("spear.orbital-cannon.stab-charge-ticks", 60)
                 : cfg.getInt("spear.orbital-cannon.nuke-charge-ticks", 20);
         float power = (float) cfg.getDouble("spear.orbital-cannon.tnt-power", 6.0);
-        int spacing = Math.max(1, cfg.getInt("spear.orbital-cannon.stab-spacing", 3));
+        int spacing = Math.max(1, cfg.getInt("spear.orbital-cannon.column-spacing", 4));
         // How many TNT spots are spawned per tick (each spot holds tnt-per-spot TNT).
-        int tntPerTick = Math.max(1, cfg.getInt("spear.orbital-cannon.spots-per-tick", 4));
+        int tntPerTick = Math.max(1, cfg.getInt("spear.orbital-cannon.spawn-rate", 2));
         double nukeRadius = Math.max(4.0, cfg.getDouble("spear.orbital-cannon.nuke-radius", 20.0));
 
         World world = target.getWorld();
@@ -73,7 +73,7 @@ public final class OrbitalCannon {
 
         // Nuke mode: three rings (inner to outer), one every 12 ticks.
         double[] ringFractions = {0.25, 0.6, 1.0};
-        int[] ringCounts = {8, 18, 32};
+        int[] ringCounts = {6, 12, 20};
         List<TNTPrimed> falling = new ArrayList<>();
 
         new BukkitRunnable() {
@@ -151,7 +151,7 @@ public final class OrbitalCannon {
     private void spawnTnt(World world, double x, double y, double z, Player caster, float power,
                           int fuse, List<TNTPrimed> track) {
         // Several TNT are packed into the same spot so their explosions stack.
-        int packed = Math.max(1, plugin.getConfig().getInt("spear.orbital-cannon.tnt-per-spot", 20));
+        int packed = Math.max(1, plugin.getConfig().getInt("spear.orbital-cannon.packed-tnt", 4));
         for (int n = 0; n < packed; n++) {
             TNTPrimed tnt = world.spawn(new Location(world, x, y, z), TNTPrimed.class, t -> {
                 t.setFuseTicks(fuse);
