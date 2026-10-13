@@ -42,6 +42,7 @@ public final class WeaponListener implements Listener {
     private final Map<UUID, Long> maceCooldown = new HashMap<>();
     private final Map<UUID, Long> dashCooldown = new HashMap<>();
     private final Map<UUID, Long> cannonCooldown = new HashMap<>();
+    private final Map<UUID, Long> nukeCooldown = new HashMap<>();
 
     public WeaponListener(SmpWeaponsPlugin plugin, WeaponItems items, OrbitalCannon cannon) {
         this.plugin = plugin;
@@ -64,11 +65,8 @@ public final class WeaponListener implements Listener {
             }
         } else if (WeaponItems.SPEAR.equals(type)) {
             if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                if (player.isSneaking()) {
-                    fireCannon(player);
-                } else {
-                    lungeDash(player);
-                }
+                // Shift + right-click = stab (column), right-click = nuke (rings).
+                fireCannon(player, player.isSneaking());
             }
         }
     }
@@ -205,10 +203,13 @@ public final class WeaponListener implements Listener {
     // Spear: TNT orbital cannon
     // ------------------------------------------------------------------
 
-    private void fireCannon(Player player) {
+    private void fireCannon(Player player, boolean stab) {
         var cfg = plugin.getConfig();
-        // New key name (seconds) so an old saved config with the 30 second value can't override it.
-        long cooldownMs = cfg.getLong("spear.orbital-cannon.cooldown-seconds", 10) * 1000L;
+        // New key names (seconds) so an old saved config can't override these.
+        long cooldownMs = stab
+                ? cfg.getLong("spear.orbital-cannon.stab-cooldown-seconds", 5) * 1000L
+                : cfg.getLong("spear.orbital-cannon.nuke-cooldown-seconds", 0) * 1000L;
+        Map<UUID, Long> cooldowns = stab ? cannonCooldown : nukeCooldown;
         double range = cfg.getDouble("spear.orbital-cannon.range", 200.0);
 
         World world = player.getWorld();
@@ -233,15 +234,15 @@ public final class WeaponListener implements Listener {
                     "Orbital cannon: no target in range.", net.kyori.adventure.text.format.NamedTextColor.RED));
             return;
         }
-        if (onCooldown(cannonCooldown, player, cooldownMs)) {
-            long left = remaining(cannonCooldown, player, cooldownMs);
+        if (cooldownMs > 0 && onCooldown(cooldowns, player, cooldownMs)) {
+            long left = remaining(cooldowns, player, cooldownMs);
             player.sendActionBar(net.kyori.adventure.text.Component.text(
                     "Orbital cannon recharging: " + (left / 1000 + 1) + "s",
                     net.kyori.adventure.text.format.NamedTextColor.YELLOW));
             return;
         }
 
-        cannon.fire(player, target);
+        cannon.fire(player, target, stab);
     }
 
     // ------------------------------------------------------------------
@@ -274,6 +275,7 @@ public final class WeaponListener implements Listener {
         maceCooldown.remove(id);
         dashCooldown.remove(id);
         cannonCooldown.remove(id);
+        nukeCooldown.remove(id);
     }
 
     // ------------------------------------------------------------------

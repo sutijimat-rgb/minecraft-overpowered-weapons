@@ -45,18 +45,21 @@ spear:
     # 0 = no cooldown, spam it as fast as you can right-click.
     cooldown-ms: 0
 
-  # Sneak + right-click: orbital strike cannon (real TNT explosions).
-  #   mode: stab = a column of TNT from the sky to the bottom of the world
-  #         nuke = rings of TNT falling from the sky onto the target
+  # Orbital strike cannon (real TNT explosions).
+  #   Right-click        = NUKE: rings of TNT falling from the sky onto the target
+  #   Shift + right-click = STAB: a column of TNT from the sky to the bottom of the world
+  # (The spear's dash was replaced by these. The Lunge enchantment on the spear is vanilla.)
   orbital-cannon:
-    mode: stab
     range: 300.0
-    cooldown-seconds: 10
-    charge-ticks: 60            # beam charge time before the strike (20 ticks = 1 second)
-    blast-power: 5.0            # power of each TNT (vanilla TNT is 4.0, bigger = wider hole)
-    stab-spacing: 3             # blocks between TNT in the stab column (bigger = fewer TNT)
-    tnt-spawned-per-tick: 20    # how fast the stab column is spawned (lower = less lag)
-    nuke-radius: 20.0           # outer ring radius for nuke mode
+    stab-cooldown-seconds: 5
+    nuke-cooldown-seconds: 0      # 0 = no cooldown
+    stab-charge-ticks: 60         # beam charge time before the stab (20 ticks = 1 second)
+    nuke-charge-ticks: 20         # beam charge time before the nuke
+    tnt-power: 6.0                # power of each TNT (vanilla TNT is 4.0)
+    tnt-per-spot: 20              # TNT packed into one spot so explosions stack
+    stab-spacing: 3               # blocks between TNT spots in the stab column
+    spots-per-tick: 4             # spots spawned per tick (lower = less lag, higher = faster strike)
+    nuke-radius: 20.0             # outer ring radius of the nuke
     # false = TNT hurts players and mobs but does not break blocks.
     break-blocks: true
     # true = the caster takes no damage from their own strike.
