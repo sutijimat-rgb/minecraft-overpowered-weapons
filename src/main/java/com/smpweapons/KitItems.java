@@ -65,12 +65,21 @@ public final class KitItems {
 
         // Essentials.
         add(player, new ItemStack(Material.GOLDEN_APPLE, 16));
-        add(player, new ItemStack(Material.TOTEM_OF_UNDYING, 2));
+        add(player, totem(2));
         add(player, new ItemStack(Material.ENDER_PEARL, 16));
         add(player, new ItemStack(Material.COOKED_BEEF, 64));
         add(player, new ItemStack(Material.WATER_BUCKET, 1));
         add(player, new ItemStack(Material.LAVA_BUCKET, 1));
         add(player, new ItemStack(Material.COBBLESTONE, 64));
+    }
+
+    /** Totem that stacks up to 99 (vanilla totems stack to 1). */
+    private static ItemStack totem(int amount) {
+        ItemStack item = new ItemStack(Material.TOTEM_OF_UNDYING, amount);
+        ItemMeta meta = item.getItemMeta();
+        meta.setMaxStackSize(99);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private static ItemStack potion(PotionType type) {
