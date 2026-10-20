@@ -57,12 +57,19 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
         }
     }
 
-    /** Shit sword passive: Speed and Strength while it is in the main hand. */
+    private boolean hasSword(Player player) {
+        for (ItemStack stack : player.getInventory().getContents()) {
+            if (WeaponItems.SWORD.equals(items.typeOf(stack))) return true;
+        }
+        return false;
+    }
+
+    /** Shit sword passive: Speed and Strength while it is anywhere in the inventory. */
     private void tickSwordPassive() {
         int speed = getConfig().getInt("sword.effects.speed-level", 3);
         int strength = getConfig().getInt("sword.effects.strength-level", 3);
         for (Player player : getServer().getOnlinePlayers()) {
-            if (!WeaponItems.SWORD.equals(items.typeOf(player.getInventory().getItemInMainHand()))) continue;
+            if (!hasSword(player)) continue;
             if (speed > 0) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30, speed - 1, true, false, true));
             }

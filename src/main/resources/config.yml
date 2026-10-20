@@ -74,7 +74,7 @@ sword:
     looting: 5
     sweeping_edge: 4
     mending: 1
-  # Effects while the sword is in your main hand (0 = off).
+  # Effects while the sword is anywhere in your inventory (0 = off).
   effects:
     speed-level: 3
     strength-level: 3

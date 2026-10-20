@@ -148,7 +148,7 @@ public final class WeaponItems {
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text("Shit Sword", NamedTextColor.GOLD, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(line("Speed III and Strength III while you hold it.")));
+        meta.lore(List.of(line("Speed III and Strength III while it is in your inventory.")));
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 
