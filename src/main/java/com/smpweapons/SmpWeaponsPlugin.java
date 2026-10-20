@@ -35,6 +35,7 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
 
         // Mace passive: Resistance while holding it and healthy.
         getServer().getScheduler().runTaskTimer(this, this::tickMacePassive, 10L, 10L);
+        getServer().getScheduler().runTaskTimer(this, this::tickSwordPassive, 10L, 10L);
     }
 
     private void tickMacePassive() {
@@ -52,6 +53,21 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
             if (player.getHealth() >= maxHealth.getValue() * healthyPercent) {
                 player.addPotionEffect(new PotionEffect(
                         PotionEffectType.RESISTANCE, 30, amplifier, true, false, true));
+            }
+        }
+    }
+
+    /** Shit sword passive: Speed and Strength while it is in the main hand. */
+    private void tickSwordPassive() {
+        int speed = getConfig().getInt("sword.effects.speed-level", 3);
+        int strength = getConfig().getInt("sword.effects.strength-level", 3);
+        for (Player player : getServer().getOnlinePlayers()) {
+            if (!WeaponItems.SWORD.equals(items.typeOf(player.getInventory().getItemInMainHand()))) continue;
+            if (speed > 0) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30, speed - 1, true, false, true));
+            }
+            if (strength > 0) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 30, strength - 1, true, false, true));
             }
         }
     }

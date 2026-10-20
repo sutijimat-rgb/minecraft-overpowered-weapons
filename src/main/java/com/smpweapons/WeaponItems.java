@@ -148,20 +148,19 @@ public final class WeaponItems {
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text("Shit Sword", NamedTextColor.GOLD, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(line("Looks like dirt. Hits like a truck.")));
+        meta.lore(List.of(line("Speed III and Strength III while you hold it.")));
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 
-        var enchants = plugin.getConfig().getConfigurationSection("sword.enchantments");
+        var enchants = plugin.getConfig().getConfigurationSection("sword.enchants");
         java.util.Map<String, Integer> wanted = new java.util.LinkedHashMap<>();
         if (enchants != null) {
             for (String key : enchants.getKeys(false)) wanted.put(key, enchants.getInt(key, 0));
         } else {
-            wanted.put("sharpness", 255);
-            wanted.put("fire_aspect", 2);
-            wanted.put("looting", 10);
-            wanted.put("sweeping_edge", 3);
-            wanted.put("unbreaking", 10);
+            wanted.put("sharpness", 6);
+            wanted.put("fire_aspect", 3);
+            wanted.put("looting", 5);
+            wanted.put("sweeping_edge", 4);
             wanted.put("mending", 1);
         }
         for (var entry : wanted.entrySet()) {
