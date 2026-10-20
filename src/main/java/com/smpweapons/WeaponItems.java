@@ -21,6 +21,7 @@ public final class WeaponItems {
 
     public static final String MACE = "mace";
     public static final String SPEAR = "spear";
+    public static final String SWORD = "sword";
 
     private final SmpWeaponsPlugin plugin;
     private final NamespacedKey typeKey;
@@ -56,7 +57,7 @@ public final class WeaponItems {
     public ItemStack createMace() {
         ItemStack item = new ItemStack(Material.MACE);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Infinite Mace", NamedTextColor.RED, TextDecoration.BOLD)
+        meta.displayName(Component.text("Shit Mace", NamedTextColor.RED, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 line("Infinite reach: left-click anything in sight."),
@@ -86,6 +87,7 @@ public final class WeaponItems {
             meta.addEnchant(enchantment, entry.getValue(), true);
         }
 
+        meta.setItemModel(NamespacedKey.minecraft("dirt"));   // looks like a dirt block
         meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, MACE);
         item.setItemMeta(meta);
         return item;
@@ -100,7 +102,7 @@ public final class WeaponItems {
         var cfg = plugin.getConfig();
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Orbital Spear", NamedTextColor.AQUA, TextDecoration.BOLD)
+        meta.displayName(Component.text("Shit Spear", NamedTextColor.AQUA, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 line("Right-click: lunge dash."),
@@ -134,9 +136,56 @@ public final class WeaponItems {
             if (lunge != null) meta.addEnchant(lunge, lungeLevel, true);
         }
 
+        meta.setItemModel(NamespacedKey.minecraft("dirt"));   // looks like a dirt block
         meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, SPEAR);
         item.setItemMeta(meta);
         return item;
+    }
+
+    /** The "shit sword": a netherite sword with huge enchants that looks like a dirt block. */
+    public ItemStack createSword() {
+        ItemStack item = new ItemStack(Material.NETHERITE_SWORD);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text("Shit Sword", NamedTextColor.GOLD, TextDecoration.BOLD)
+                .decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(line("Looks like dirt. Hits like a truck.")));
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
+        var enchants = plugin.getConfig().getConfigurationSection("sword.enchantments");
+        java.util.Map<String, Integer> wanted = new java.util.LinkedHashMap<>();
+        if (enchants != null) {
+            for (String key : enchants.getKeys(false)) wanted.put(key, enchants.getInt(key, 0));
+        } else {
+            wanted.put("sharpness", 255);
+            wanted.put("fire_aspect", 2);
+            wanted.put("looting", 10);
+            wanted.put("sweeping_edge", 3);
+            wanted.put("unbreaking", 10);
+            wanted.put("mending", 1);
+        }
+        for (var entry : wanted.entrySet()) {
+            if (entry.getValue() <= 0) continue;
+            Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(entry.getKey().toLowerCase()));
+            if (enchantment == null) {
+                plugin.getLogger().warning("Unknown enchantment in config: " + entry.getKey());
+                continue;
+            }
+            meta.addEnchant(enchantment, entry.getValue(), true);
+        }
+
+        meta.setItemModel(NamespacedKey.minecraft("dirt"));
+        meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, SWORD);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    /** Name shown in death messages, or null if the item is not one of our weapons. */
+    public static String deathName(String type) {
+        if (MACE.equals(type)) return "Shit Mace";
+        if (SPEAR.equals(type)) return "Shit Spear";
+        if (SWORD.equals(type)) return "Shit Sword";
+        return null;
     }
 
     private static Component line(String text) {

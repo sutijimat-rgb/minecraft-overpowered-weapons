@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -277,6 +278,29 @@ public final class WeaponListener implements Listener {
                 && tnt.getSource().equals(event.getEntity())) {
             event.setCancelled(true);
         }
+    }
+
+    /** Death messages read "<victim> was killed by Shit Spear / Shit Mace / Shit Sword". */
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        String type = null;
+
+        // Orbital strike TNT counts as the spear.
+        if (victim.getLastDamageCause() instanceof EntityDamageByEntityEvent hit
+                && hit.getDamager() instanceof TNTPrimed tnt
+                && tnt.getPersistentDataContainer().has(cannon.tntKey(), PersistentDataType.BYTE)) {
+            type = WeaponItems.SPEAR;
+        } else if (victim.getKiller() != null) {
+            type = items.typeOf(victim.getKiller().getInventory().getItemInMainHand());
+        }
+
+        String name = WeaponItems.deathName(type);
+        if (name == null) return;
+        event.deathMessage(net.kyori.adventure.text.Component.text(victim.getName() + " was killed by ",
+                        net.kyori.adventure.text.format.NamedTextColor.WHITE)
+                .append(net.kyori.adventure.text.Component.text(name,
+                        net.kyori.adventure.text.format.NamedTextColor.GOLD)));
     }
 
     @EventHandler

@@ -45,7 +45,7 @@ public final class WeaponLimiter implements Listener {
         for (int slot = 0; slot < contents.length; slot++) {
             ItemStack stack = contents[slot];
             String type = items.typeOf(stack);
-            if (type == null) continue;
+            if (type == null || !limited(type)) continue;
 
             String id = items.idOf(stack);
             if (id == null && registry.validId(type) == null) {
@@ -87,9 +87,14 @@ public final class WeaponLimiter implements Listener {
         }
     }
 
+    /** The sword is not limited; only the mace and spear are one-per-server. */
+    private static boolean limited(String type) {
+        return WeaponItems.MACE.equals(type) || WeaponItems.SPEAR.equals(type);
+    }
+
     private boolean isStale(ItemStack stack) {
         String type = items.typeOf(stack);
-        if (type == null) return false;
+        if (type == null || !limited(type)) return false;
         String id = items.idOf(stack);
         String valid = registry.validId(type);
         return id == null ? valid != null : !id.equals(valid);

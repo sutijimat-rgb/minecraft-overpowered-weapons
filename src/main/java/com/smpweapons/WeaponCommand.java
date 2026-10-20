@@ -79,7 +79,7 @@ public final class WeaponCommand implements TabExecutor {
 
     private void give(CommandSender sender, String label, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /" + label + " give <mace|spear> [player]", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /" + label + " give <mace|spear|sword> [player]", NamedTextColor.YELLOW));
             return;
         }
 
@@ -100,6 +100,14 @@ public final class WeaponCommand implements TabExecutor {
         ItemStack item;
         switch (args[1].toLowerCase(Locale.ROOT)) {
             case "mace" -> item = items.createMace();
+            case "sword" -> {
+                // The sword is not limited: give it straight away.
+                ItemStack sword = items.createSword();
+                var left = target.getInventory().addItem(sword);
+                left.values().forEach(rest -> target.getWorld().dropItemNaturally(target.getLocation(), rest));
+                sender.sendMessage(Component.text("Gave the shit sword to " + target.getName() + ".", NamedTextColor.GREEN));
+                return;
+            }
             case "spear" -> {
                 item = items.createSpear();
                 if (item == null) {
@@ -111,7 +119,7 @@ public final class WeaponCommand implements TabExecutor {
                 }
             }
             default -> {
-                sender.sendMessage(Component.text("Weapon must be mace or spear.", NamedTextColor.RED));
+                sender.sendMessage(Component.text("Weapon must be mace, spear or sword.", NamedTextColor.RED));
                 return;
             }
         }
@@ -146,7 +154,7 @@ public final class WeaponCommand implements TabExecutor {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("kit")) {
             Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
-            out.addAll(List.of("mace", "spear"));
+            out.addAll(List.of("mace", "spear", "sword"));
         } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
             Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         }
