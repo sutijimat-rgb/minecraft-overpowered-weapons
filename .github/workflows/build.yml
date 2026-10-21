@@ -20,7 +20,12 @@ jobs:
         with:
           gradle-version: 8.10.2
       - name: Build
-        run: gradle build
+        run: |
+          set +e
+          gradle build --console=plain > build.log 2>&1
+          code=$?
+          grep -E "error:|\.java:[0-9]+" build.log | head -40 | while IFS= read -r l; do echo "::error::$l"; done
+          exit $code
       - uses: actions/upload-artifact@v4
         with:
           name: SmpWeapons-jar
