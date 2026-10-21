@@ -1,6 +1,5 @@
 package com.smpweapons;
 
-import io.papermc.paper.event.player.PlayerLaunchProjectileEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
@@ -20,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -127,10 +127,11 @@ public final class SiftListener implements Listener {
     }
 
     @EventHandler
-    public void onLaunch(PlayerLaunchProjectileEvent event) {
-        if (event.getProjectile() instanceof Snowball
-                && SiftItems.ICHOR_SNOWBALL.equals(items.kindOf(event.getItemStack()))) {
-            event.getProjectile().getPersistentDataContainer().set(shotKey, PersistentDataType.BYTE, (byte) 1);
+    public void onLaunch(ProjectileLaunchEvent event) {
+        if (!(event.getEntity() instanceof Snowball ball) || !(ball.getShooter() instanceof Player shooter)) return;
+        if (SiftItems.ICHOR_SNOWBALL.equals(items.kindOf(shooter.getInventory().getItemInMainHand()))
+                || SiftItems.ICHOR_SNOWBALL.equals(items.kindOf(shooter.getInventory().getItemInOffHand()))) {
+            ball.getPersistentDataContainer().set(shotKey, PersistentDataType.BYTE, (byte) 1);
         }
     }
 
