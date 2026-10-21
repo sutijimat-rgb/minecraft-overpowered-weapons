@@ -6,9 +6,8 @@ description: Overpowered SMP weapons - infinite reach mace and orbital cannon sp
 commands:
   smpweapons:
     description: Give or reload the custom weapons.
-    usage: /<command> <give|kit|reset|reload> [mace|spear|sword|player]
+    usage: /<command> <give|kit|reset|reload|sift|rift|villager|start|tier|hearts|withdraw|revive>
     aliases: [smpw]
-    permission: smpweapons.admin
 permissions:
   smpweapons.admin:
     description: Allows giving the weapons and reloading the config.

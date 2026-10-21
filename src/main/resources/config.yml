@@ -78,3 +78,20 @@ sword:
   effects:
     speed-level: 3
     strength-level: 3
+
+# ---- The Sift (approximation of Mielon's The Sift) ----
+sift:
+  enabled: true
+  world-name: sift
+  rift-seconds: 300
+
+# ---- Spear and mace SMP rules ----
+smp:
+  starting-hearts: 10
+  max-hearts: 20
+  lose-heart-on-any-death: true   # false = only PvP deaths cost a heart
+  elimination: spectator          # spectator or ban, used when a player reaches 0 hearts
+  revive-hearts: 5
+  give-on-first-join: true        # new players get a starter spear and mace
+  only-spear-mace: true           # PvP melee only works with spears and maces
+  god-kills: 25                   # kills with a tier weapon to earn the God Mace / God Spear
