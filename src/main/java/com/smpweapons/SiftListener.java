@@ -74,13 +74,66 @@ public final class SiftListener implements Listener {
     // ---------------- Note block portal puzzle ----------------
 
     /** Strike order of the 8 tuned note blocks (positions 1 to 8 from left to right). */
-    private static final int[] SEQUENCE = {1, 3, 7, 6, 5, 2, 4, 8};
+    private static final int[] DEFAULT_SEQUENCE = {1, 2, 3, 4, 5, 6, 7, 8};
+
+    private int[] sequence() {
+        List<Integer> configured = plugin.getConfig().getIntegerList("sift.portal-sequence");
+        if (configured.size() != 8) return DEFAULT_SEQUENCE;
+        int[] out = new int[8];
+        for (int i = 0; i < 8; i++) out[i] = configured.get(i);
+        return out;
+    }
     private final Map<UUID, Integer> noteStep = new HashMap<>();
     private final Map<UUID, Long> noteTime = new HashMap<>();
 
+    /** Blowing a Goat Horn at an Ancient City portal frame places the 8 tuned note blocks. */
+    @EventHandler
+    public void onHornAtPortal(PlayerInteractEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getItem() == null || event.getItem().getType() != Material.GOAT_HORN) return;
+        Player player = event.getPlayer();
+        if (player.getWorld().equals(SiftWorld.get(plugin))) return;
+
+        if (plugin.getConfig().getBoolean("sift.require-ancient-city", true) && !nearPortalFrame(player)) return;
+
+        BlockFace facing = player.getFacing();
+        BlockFace axis = (facing == BlockFace.NORTH || facing == BlockFace.SOUTH) ? BlockFace.EAST : BlockFace.SOUTH;
+        Block center = player.getLocation().getBlock().getRelative(facing, 3);
+        Block start = center.getRelative(axis.getOppositeFace(), 4);
+        for (int i = 0; i < 8; i++) {
+            Block block = start.getRelative(axis, i);
+            block.getRelative(BlockFace.UP).setType(Material.AIR);
+            NoteBlock data = (NoteBlock) Material.NOTE_BLOCK.createBlockData();
+            data.setNote(new org.bukkit.Note(i + 1));
+            block.setBlockData(data, false);
+            block.getWorld().spawnParticle(Particle.NOTE, block.getLocation().add(0.5, 1.2, 0.5), 3, 0.2, 0.2, 0.2);
+        }
+        player.getWorld().playSound(center.getLocation(), org.bukkit.Sound.BLOCK_AMETHYST_BLOCK_RESONATE, 2.0f, 0.8f);
+        player.sendMessage(Component.text("Eight note blocks awaken. Strike them in order to open the portal.",
+                NamedTextColor.LIGHT_PURPLE));
+    }
+
+    /** True if reinforced deepslate (the portal frame of an Ancient City) is within 10 blocks. */
+    private boolean nearPortalFrame(Player player) {
+        Location base = player.getLocation();
+        for (int dx = -10; dx <= 10; dx++) {
+            for (int dy = -6; dy <= 6; dy++) {
+                for (int dz = -10; dz <= 10; dz++) {
+                    if (base.getWorld().getBlockAt(base.getBlockX() + dx, base.getBlockY() + dy, base.getBlockZ() + dz)
+                            .getType() == Material.REINFORCED_DEEPSLATE) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * 8 note blocks in a row, tuned to notes 1 to 8 (right-click each one), left to right.
-     * Left-click them in the order 1, 3, 7, 6, 5, 2, 4, 8 to open a Rift to the Sift.
+     * Left-click them in the order from sift.portal-sequence (default 1 to 8) to open a Rift to the Sift.
      */
     @EventHandler
     public void onNotePuzzle(PlayerInteractEvent event) {
@@ -118,12 +171,13 @@ public final class SiftListener implements Listener {
             if (now - noteTime.getOrDefault(id, 0L) > 15000) step = 0;
             noteTime.put(id, now);
 
-            if (SEQUENCE[step] == position) {
+            int[] sequence = sequence();
+            if (sequence[step] == position) {
                 step++;
             } else {
-                step = SEQUENCE[0] == position ? 1 : 0;
+                step = sequence[0] == position ? 1 : 0;
             }
-            if (step >= SEQUENCE.length) {
+            if (step >= sequence.length) {
                 noteStep.remove(id);
                 Block middle = start.getRelative(axis, 3);
                 rifts.open(player, middle.getLocation().add(0.5, 1, 0.5));

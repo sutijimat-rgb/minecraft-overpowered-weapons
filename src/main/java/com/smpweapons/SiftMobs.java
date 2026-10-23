@@ -256,7 +256,7 @@ public final class SiftMobs implements Listener {
         }
     }
 
-    /** Goat Horn: summons a Singer and sends your bonded Echo Golems mining. */
+    /** Goat Horn: sends your bonded Echo Golems mining. */
     @EventHandler
     public void onHorn(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
@@ -264,26 +264,6 @@ public final class SiftMobs implements Listener {
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getItem() == null || event.getItem().getType() != Material.GOAT_HORN) return;
         Player player = event.getPlayer();
-
-        // Singer.
-        UUID old = singers.remove(player.getUniqueId());
-        if (old != null) {
-            Entity previous = Bukkit.getEntity(old);
-            if (previous != null) previous.remove();
-        }
-        Vector dir = player.getLocation().getDirection().setY(0);
-        if (dir.lengthSquared() < 0.01) dir = new Vector(1, 0, 0);
-        Location at = player.getLocation().add(dir.normalize().multiply(3)).add(0, 1.5, 0);
-        Allay singer = at.getWorld().spawn(at, Allay.class, a -> {
-            tag(a, SINGER, "Singer", NamedTextColor.LIGHT_PURPLE);
-            a.setInvulnerable(true);
-            a.setPersistent(false);
-        });
-        singers.put(player.getUniqueId(), singer.getUniqueId());
-        at.getWorld().spawnParticle(Particle.NOTE, at, 20, 0.6, 0.6, 0.6);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (singer.isValid()) singer.remove();
-        }, 6000L);
 
         // Echo Golems.
         long end = System.currentTimeMillis() + 60_000L;

@@ -84,6 +84,10 @@ sift:
   enabled: true
   world-name: sift
   rift-seconds: 300
+  # true = the goat horn only places the 8 note blocks near an Ancient City portal frame (reinforced deepslate).
+  require-ancient-city: true
+  # Order to strike the 8 note blocks (positions 1 to 8, left to right) to open the portal.
+  portal-sequence: [1, 2, 3, 4, 5, 6, 7, 8]
 
 # ---- Spear and mace SMP rules ----
 smp:
