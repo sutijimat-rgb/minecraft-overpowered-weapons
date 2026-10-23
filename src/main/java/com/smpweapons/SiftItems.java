@@ -72,6 +72,7 @@ public final class SiftItems {
         List<ItemStack> set = new ArrayList<>();
         set.add(siftite(Material.NETHERITE_SWORD, "Siftite Sword",
                 "sharpness:6", "sweeping_edge:4", "looting:4", "fire_aspect:2"));
+        set.add(siftite(Material.MACE, "Siftite Mace", "density:6", "breach:5", "wind_burst:3"));
         set.add(siftite(Material.NETHERITE_PICKAXE, "Siftite Pickaxe", "efficiency:7", "fortune:4"));
         set.add(siftite(Material.NETHERITE_AXE, "Siftite Axe", "efficiency:7", "sharpness:6"));
         set.add(siftite(Material.NETHERITE_SHOVEL, "Siftite Shovel", "efficiency:7"));
