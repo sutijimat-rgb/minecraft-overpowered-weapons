@@ -9,6 +9,9 @@ import org.bukkit.Particle;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,7 +37,10 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 import java.util.List;
 import java.util.Random;
 
@@ -57,6 +63,69 @@ public final class SiftListener implements Listener {
         plugin.getDataFolder().mkdirs();
         this.pendingFile = new File(plugin.getDataFolder(), "siftite-pending.yml");
         this.pending = YamlConfiguration.loadConfiguration(pendingFile);
+    }
+
+    // ---------------- Note block portal puzzle ----------------
+
+    /** Strike order of the 8 tuned note blocks (positions 1 to 8 from left to right). */
+    private static final int[] SEQUENCE = {1, 3, 7, 6, 5, 2, 4, 8};
+    private final Map<UUID, Integer> noteStep = new HashMap<>();
+    private final Map<UUID, Long> noteTime = new HashMap<>();
+
+    /**
+     * 8 note blocks in a row, tuned to notes 1 to 8 (right-click each one), left to right.
+     * Left-click them in the order 1, 3, 7, 6, 5, 2, 4, 8 to open a Rift to the Sift.
+     */
+    @EventHandler
+    public void onNotePuzzle(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK || event.getHand() != EquipmentSlot.HAND) return;
+        Block clicked = event.getClickedBlock();
+        if (clicked == null || clicked.getType() != Material.NOTE_BLOCK) return;
+        Player player = event.getPlayer();
+
+        for (BlockFace axis : new BlockFace[]{BlockFace.EAST, BlockFace.SOUTH}) {
+            Block start = clicked;
+            while (start.getRelative(axis.getOppositeFace()).getType() == Material.NOTE_BLOCK) {
+                start = start.getRelative(axis.getOppositeFace());
+            }
+            int length = 0;
+            int position = -1;
+            Block cursor = start;
+            while (cursor.getType() == Material.NOTE_BLOCK) {
+                if (cursor.equals(clicked)) position = length + 1;
+                length++;
+                cursor = cursor.getRelative(axis);
+            }
+            if (length != 8 || position < 0) continue;
+
+            // Every block must be tuned to its own position (note 1 to 8, left to right).
+            boolean tuned = true;
+            for (int i = 0; i < 8; i++) {
+                NoteBlock data = (NoteBlock) start.getRelative(axis, i).getBlockData();
+                if (data.getNote().getId() != i + 1) tuned = false;
+            }
+            if (!tuned) return;
+
+            UUID id = player.getUniqueId();
+            long now = System.currentTimeMillis();
+            int step = noteStep.getOrDefault(id, 0);
+            if (now - noteTime.getOrDefault(id, 0L) > 15000) step = 0;
+            noteTime.put(id, now);
+
+            if (SEQUENCE[step] == position) {
+                step++;
+            } else {
+                step = SEQUENCE[0] == position ? 1 : 0;
+            }
+            if (step >= SEQUENCE.length) {
+                noteStep.remove(id);
+                Block middle = start.getRelative(axis, 3);
+                rifts.open(player, middle.getLocation().add(0.5, 1, 0.5));
+            } else {
+                noteStep.put(id, step);
+            }
+            return;
+        }
     }
 
     // ---------------- Ichor ----------------
