@@ -25,10 +25,11 @@ public final class WeaponCommand implements TabExecutor {
     private final TierItems tiers;
     private final HeartManager hearts;
     private final SmpListener smp;
+    private final SiftMobs mobs;
 
     public WeaponCommand(SmpWeaponsPlugin plugin, WeaponItems items, WeaponRegistry registry, WeaponLimiter limiter,
                          SiftItems sift, RiftManager rifts, SiftTrader trader, TierItems tiers,
-                         HeartManager hearts, SmpListener smp) {
+                         HeartManager hearts, SmpListener smp, SiftMobs mobs) {
         this.plugin = plugin;
         this.items = items;
         this.registry = registry;
@@ -39,6 +40,7 @@ public final class WeaponCommand implements TabExecutor {
         this.tiers = tiers;
         this.hearts = hearts;
         this.smp = smp;
+        this.mobs = mobs;
     }
 
     private void giveAll(Player target, java.util.List<ItemStack> list) {
@@ -78,6 +80,13 @@ public final class WeaponCommand implements TabExecutor {
                 org.bukkit.util.Vector dir = p.getLocation().getDirection().setY(0);
                 if (dir.lengthSquared() < 0.01) dir = new org.bukkit.util.Vector(1, 0, 0);
                 rifts.open(p, p.getLocation().add(dir.normalize().multiply(3)));
+            }
+            case "spawn" -> {
+                if (!(sender instanceof Player p)) return;
+                String which = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
+                if (!mobs.spawn(which, p.getLocation())) {
+                    sender.sendMessage(Component.text("Usage: /smpweapons spawn <blub|sifter|sniffer|echo_golem|twisted_warden>", NamedTextColor.YELLOW));
+                }
             }
             case "villager" -> {
                 if (!(sender instanceof Player p)) return;
@@ -295,9 +304,11 @@ public final class WeaponCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            out.addAll(List.of("give", "kit", "reset", "reload", "sift", "rift", "villager", "start", "tier", "hearts", "withdraw", "revive"));
+            out.addAll(List.of("give", "kit", "reset", "reload", "sift", "rift", "villager", "spawn", "start", "tier", "hearts", "withdraw", "revive"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
             out.addAll(List.of("mace", "spear"));
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("spawn")) {
+            out.addAll(List.of("blub", "sifter", "sniffer", "echo_golem", "twisted_warden"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("tier")) {
             out.addAll(List.of("mace", "spear"));
         } else if (args.length == 2 && List.of("start", "hearts", "revive").contains(args[0].toLowerCase(Locale.ROOT))) {

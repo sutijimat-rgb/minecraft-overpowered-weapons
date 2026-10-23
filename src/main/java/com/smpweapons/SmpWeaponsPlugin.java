@@ -31,6 +31,9 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
         rifts.start();
         getServer().getPluginManager().registerEvents(new SiftListener(this, siftItems, rifts), this);
         SiftWorld.create(this);
+        SiftMobs mobs = new SiftMobs(this, siftItems);
+        getServer().getPluginManager().registerEvents(mobs, this);
+        mobs.start();
         SiftTrader trader = new SiftTrader(items, siftItems);
 
         TierItems tiers = new TierItems(this);
@@ -40,7 +43,7 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
         smp.enablePvpEverywhere();
 
         WeaponCommand command = new WeaponCommand(this, items, registry, limiter,
-                siftItems, rifts, trader, tiers, hearts, smp);
+                siftItems, rifts, trader, tiers, hearts, smp, mobs);
         var pluginCommand = getCommand("smpweapons");
         if (pluginCommand != null) {
             pluginCommand.setExecutor(command);
