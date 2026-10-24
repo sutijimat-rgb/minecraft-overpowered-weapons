@@ -98,4 +98,4 @@ smp:
   revive-hearts: 5
   give-on-first-join: true        # new players get a starter spear and mace
   only-spear-mace: true           # PvP melee only works with spears and maces
-  god-kills: 25                   # kills with a tier weapon to earn the God Mace / God Spear
+  god-tier-kills: 60              # level 14: kills with a tier 13 weapon to earn the God Mace / God Spear

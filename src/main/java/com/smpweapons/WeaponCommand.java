@@ -101,7 +101,7 @@ public final class WeaponCommand implements TabExecutor {
             }
             case "tier" -> {
                 if (args.length < 3) {
-                    sender.sendMessage(Component.text("Usage: /smpweapons tier <mace|spear> <kills> [player]", NamedTextColor.YELLOW));
+                    sender.sendMessage(Component.text("Usage: /smpweapons tier <mace|spear|sword> <kills> [player]", NamedTextColor.YELLOW));
                     return;
                 }
                 Player t = playerArg(sender, args, 3);
@@ -310,7 +310,7 @@ public final class WeaponCommand implements TabExecutor {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("spawn")) {
             out.addAll(List.of("blub", "sifter", "sniffer", "echo_golem", "twisted_warden"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("tier")) {
-            out.addAll(List.of("mace", "spear"));
+            out.addAll(List.of("mace", "spear", "sword"));
         } else if (args.length == 2 && List.of("start", "hearts", "revive").contains(args[0].toLowerCase(Locale.ROOT))) {
             Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("kit")) {

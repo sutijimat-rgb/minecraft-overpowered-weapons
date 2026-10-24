@@ -117,10 +117,11 @@ public final class SmpListener implements Listener {
         if (type == null) return;
 
         int kills = tiers.killsOf(held) + 1;
-        String name = WeaponItems.MACE.equals(type) ? "Mace" : "Spear";
+        String name = WeaponItems.MACE.equals(type) ? "Mace" : (WeaponItems.SPEAR.equals(type) ? "Spear" : "Sword");
 
-        // Enough kills: become the God weapon, if nobody holds it yet.
-        if (kills >= tiers.godKills() && registry.validId(type) == null) {
+        // Level 14: become the God weapon (mace and spear only), if nobody holds it yet.
+        boolean canBeGod = WeaponItems.MACE.equals(type) || WeaponItems.SPEAR.equals(type);
+        if (canBeGod && kills >= tiers.godKills() && registry.validId(type) == null) {
             ItemStack god = WeaponItems.MACE.equals(type) ? items.createMace() : items.createSpear();
             if (god != null) {
                 String id = UUID.randomUUID().toString();
@@ -193,6 +194,6 @@ public final class SmpListener implements Listener {
         if (item == null) return false;
         Material m = item.getType();
         if (m == Material.MACE || m.name().endsWith("_SPEAR")) return true;
-        return items.typeOf(item) != null || sift.kindOf(item) != null;
+        return items.typeOf(item) != null || sift.kindOf(item) != null || tiers.typeOf(item) != null;
     }
 }

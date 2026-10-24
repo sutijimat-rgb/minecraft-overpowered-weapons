@@ -41,6 +41,9 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
         SmpListener smp = new SmpListener(this, items, siftItems, tiers, hearts, registry);
         getServer().getPluginManager().registerEvents(smp, this);
         smp.enablePvpEverywhere();
+        TierListener tierListener = new TierListener(this, tiers);
+        getServer().getPluginManager().registerEvents(tierListener, this);
+        tierListener.start();
 
         WeaponCommand command = new WeaponCommand(this, items, registry, limiter,
                 siftItems, rifts, trader, tiers, hearts, smp, mobs);
