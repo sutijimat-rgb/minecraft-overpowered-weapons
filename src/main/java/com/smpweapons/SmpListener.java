@@ -50,14 +50,34 @@ public final class SmpListener implements Listener {
         event.getWorld().setPVP(true);
     }
 
-    /** The starter spear and mace everyone gets. */
+    private static final String[] STARTER_TYPES = {WeaponItems.SWORD, WeaponItems.MACE, WeaponItems.SPEAR};
+
+    /** The starter tier 1 sword, mace and spear everyone gets. */
     public void giveStarter(Player player) {
-        for (String type : new String[]{WeaponItems.MACE, WeaponItems.SPEAR}) {
-            ItemStack item = tiers.create(type, 0);
-            if (item != null) {
-                player.getInventory().addItem(item).values()
-                        .forEach(rest -> player.getWorld().dropItemNaturally(player.getLocation(), rest));
+        for (String type : STARTER_TYPES) {
+            giveTier1(player, type);
+        }
+    }
+
+    private void giveTier1(Player player, String type) {
+        ItemStack item = tiers.create(type, 0);
+        if (item != null) {
+            player.getInventory().addItem(item).values()
+                    .forEach(rest -> player.getWorld().dropItemNaturally(player.getLocation(), rest));
+        }
+    }
+
+    /** After respawning, anyone missing one of the three weapons gets a fresh tier 1. */
+    private void giveMissingStarters(Player player) {
+        for (String type : STARTER_TYPES) {
+            boolean has = false;
+            for (ItemStack stack : player.getInventory().getContents()) {
+                if (type.equals(tiers.typeOf(stack))) {
+                    has = true;
+                    break;
+                }
             }
+            if (!has) giveTier1(player, type);
         }
     }
 
@@ -78,7 +98,12 @@ public final class SmpListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskLater(plugin, () -> hearts.apply(player), 2L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            hearts.apply(player);
+            if (plugin.getConfig().getBoolean("smp.give-on-first-join", true) && hearts.get(player) > 0) {
+                giveMissingStarters(player);
+            }
+        }, 2L);
     }
 
     // ---------------- kills: hearts, tiers, elimination ----------------
@@ -88,6 +113,9 @@ public final class SmpListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
         boolean pvp = killer != null && !killer.equals(victim);
+
+        // Tier weapons are lost on death (so they can't be farmed); you respawn with a fresh tier 1 set.
+        event.getDrops().removeIf(stack -> tiers.typeOf(stack) != null);
 
         // Lifesteal.
         boolean loseOnAny = plugin.getConfig().getBoolean("smp.lose-heart-on-any-death", true);
