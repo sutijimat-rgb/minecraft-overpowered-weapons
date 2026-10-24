@@ -207,8 +207,8 @@ public final class WeaponCommand implements TabExecutor {
     }
 
     private void reset(CommandSender sender, String label, String[] args) {
-        if (args.length < 2 || !(args[1].equalsIgnoreCase("mace") || args[1].equalsIgnoreCase("spear"))) {
-            sender.sendMessage(Component.text("Usage: /" + label + " reset <mace|spear>", NamedTextColor.YELLOW));
+        if (args.length < 2 || !(args[1].equalsIgnoreCase("mace") || args[1].equalsIgnoreCase("spear") || args[1].equalsIgnoreCase("godsword"))) {
+            sender.sendMessage(Component.text("Usage: /" + label + " reset <mace|spear|godsword>", NamedTextColor.YELLOW));
             return;
         }
         String type = args[1].toLowerCase(Locale.ROOT);
@@ -241,6 +241,7 @@ public final class WeaponCommand implements TabExecutor {
         ItemStack item;
         switch (args[1].toLowerCase(Locale.ROOT)) {
             case "mace" -> item = items.createMace();
+            case "godsword" -> item = items.createGodSword();
             case "siftite" -> {
                 giveAll(target, sift.siftiteSet());
                 sender.sendMessage(Component.text("Gave the Siftite set to " + target.getName() + ".", NamedTextColor.GREEN));
@@ -275,7 +276,7 @@ public final class WeaponCommand implements TabExecutor {
                 }
             }
             default -> {
-                sender.sendMessage(Component.text("Weapon must be mace, spear, sword, siftite, ichor or riftkey.", NamedTextColor.RED));
+                sender.sendMessage(Component.text("Weapon must be mace, spear, sword, godsword, siftite, ichor or riftkey.", NamedTextColor.RED));
                 return;
             }
         }
@@ -306,7 +307,7 @@ public final class WeaponCommand implements TabExecutor {
         if (args.length == 1) {
             out.addAll(List.of("give", "kit", "reset", "reload", "sift", "rift", "villager", "spawn", "start", "tier", "hearts", "withdraw", "revive"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
-            out.addAll(List.of("mace", "spear"));
+            out.addAll(List.of("mace", "spear", "godsword"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("spawn")) {
             out.addAll(List.of("blub", "sifter", "sniffer", "echo_golem", "twisted_warden"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("tier")) {
@@ -316,7 +317,7 @@ public final class WeaponCommand implements TabExecutor {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("kit")) {
             Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
-            out.addAll(List.of("mace", "spear", "sword", "siftite", "ichor", "riftkey"));
+            out.addAll(List.of("mace", "spear", "sword", "godsword", "siftite", "ichor", "riftkey"));
         } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
             Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
         }
