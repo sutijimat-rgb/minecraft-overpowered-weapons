@@ -105,6 +105,7 @@ public final class TierItems {
         meta.lore(lore(base, mace, kills, tier));
 
         // Enchants grow with the tier.
+        enchant(meta, "vanishing_curse", 1);
         enchant(meta, "unbreaking", Math.min(3, tier / 4));
         enchant(meta, "mending", tier >= 8 ? 1 : 0);
         if (mace) {
