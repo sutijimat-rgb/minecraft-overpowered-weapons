@@ -79,7 +79,8 @@ public final class SmpWeaponsPlugin extends JavaPlugin {
 
     private boolean hasSword(Player player) {
         for (ItemStack stack : player.getInventory().getContents()) {
-            if (WeaponItems.SWORD.equals(items.typeOf(stack))) return true;
+            String t = items.typeOf(stack);
+            if (WeaponItems.SWORD.equals(t) || WeaponItems.GOD_SWORD.equals(t)) return true;
         }
         return false;
     }

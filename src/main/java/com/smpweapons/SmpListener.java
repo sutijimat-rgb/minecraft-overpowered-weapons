@@ -120,13 +120,14 @@ public final class SmpListener implements Listener {
         String name = WeaponItems.MACE.equals(type) ? "Mace" : (WeaponItems.SPEAR.equals(type) ? "Spear" : "Sword");
 
         // Level 14: become the God weapon (mace and spear only), if nobody holds it yet.
-        boolean canBeGod = WeaponItems.MACE.equals(type) || WeaponItems.SPEAR.equals(type);
-        if (canBeGod && kills >= tiers.godKills() && registry.validId(type) == null) {
-            ItemStack god = WeaponItems.MACE.equals(type) ? items.createMace() : items.createSpear();
+        String godType = WeaponItems.SWORD.equals(type) ? WeaponItems.GOD_SWORD : type;
+        if (kills >= tiers.godKills() && registry.validId(godType) == null) {
+            ItemStack god = WeaponItems.MACE.equals(type) ? items.createMace()
+                    : (WeaponItems.SPEAR.equals(type) ? items.createSpear() : items.createGodSword());
             if (god != null) {
                 String id = UUID.randomUUID().toString();
                 god = items.withId(god, id);
-                registry.setValidId(type, id);
+                registry.setValidId(godType, id);
                 killer.getInventory().setItemInMainHand(god);
                 Bukkit.broadcast(Component.text(killer.getName() + " has earned the God " + name + "!",
                         NamedTextColor.GOLD));

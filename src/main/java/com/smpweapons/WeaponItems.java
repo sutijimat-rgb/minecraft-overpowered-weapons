@@ -22,6 +22,7 @@ public final class WeaponItems {
     public static final String MACE = "mace";
     public static final String SPEAR = "spear";
     public static final String SWORD = "sword";
+    public static final String GOD_SWORD = "godsword";
 
     private final SmpWeaponsPlugin plugin;
     private final NamespacedKey typeKey;
@@ -179,11 +180,34 @@ public final class WeaponItems {
         return item;
     }
 
+    /** The God Sword: the one-per-server level 14 sword. */
+    public ItemStack createGodSword() {
+        ItemStack item = new ItemStack(Material.NETHERITE_SWORD);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text("God Sword", NamedTextColor.GOLD, TextDecoration.BOLD)
+                .decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(line("The only God Sword on the server."),
+                line("Speed III and Strength III while it is in your inventory.")));
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        String[][] enchants = {{"sharpness", "10"}, {"fire_aspect", "3"}, {"looting", "5"},
+                {"sweeping_edge", "4"}, {"knockback", "2"}, {"mending", "1"}};
+        for (String[] e : enchants) {
+            Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(e[0]));
+            if (enchantment != null) meta.addEnchant(enchantment, Integer.parseInt(e[1]), true);
+        }
+        meta.setItemModel(NamespacedKey.minecraft("dirt"));
+        meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, GOD_SWORD);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     /** Name shown in death messages, or null if the item is not one of our weapons. */
     public static String deathName(String type) {
         if (MACE.equals(type)) return "Shit Mace";
         if (SPEAR.equals(type)) return "Shit Spear";
         if (SWORD.equals(type)) return "Shit Sword";
+        if (GOD_SWORD.equals(type)) return "God Sword";
         return null;
     }
 

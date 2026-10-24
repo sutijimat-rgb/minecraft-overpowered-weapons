@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-/** Enforces: only one mace and one spear may exist on the server. */
+/** Enforces: only one mace, one spear and one God Sword may exist on the server. */
 public final class WeaponLimiter implements Listener {
 
     private final SmpWeaponsPlugin plugin;
@@ -89,7 +89,7 @@ public final class WeaponLimiter implements Listener {
 
     /** The sword is not limited; only the mace and spear are one-per-server. */
     private static boolean limited(String type) {
-        return WeaponItems.MACE.equals(type) || WeaponItems.SPEAR.equals(type);
+        return WeaponItems.MACE.equals(type) || WeaponItems.SPEAR.equals(type) || WeaponItems.GOD_SWORD.equals(type);
     }
 
     private boolean isStale(ItemStack stack) {
